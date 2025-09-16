@@ -25,7 +25,7 @@ export default function SignupPage() {
                 <Typography component="p" sx={{ mt: 1, color: secondaryColor }}>
                     이미 계정이 있으신가요?
                     {/* 로그인 페이지로 이동하는 링크입니다. */}
-                    <Link component={NextLink} href="/public" sx={{ color: primaryColor, fontWeight: 'medium', ml: 1 }}>
+                    <Link component={NextLink} href="/login" sx={{ color: primaryColor, fontWeight: 'medium', ml: 1 }}>
                         로그인
                     </Link>
                 </Typography>

@@ -44,7 +44,6 @@ export default function Header() {
                         <Button component={NextLink} href="/signup" variant="contained" sx={{ backgroundColor: primaryColor, fontWeight: 'bold' }}>
                             회원가입
                         </Button>
-                        <Avatar src="https://lh3.googleusercontent.com/aida-public/AB6AXuBNMNAfMpvoXUPX4xKINSls3hGggmZ6IApJ6vWHjrOQCVqHhRitVZJXGhxuBCznI2GVXI8AkoiI-su_zPeke9zJZTQyKsz8J8XChWg7J5h-q2FfCXOMdpgPwhHY80Qy5GGqkrfMmP9fGr_8PRJT1UhVVwInv7yhdXZBNcg5E-sblSNGxBwuRPj3iwoIspPAJ71EuTIUyk-EerMyb0OecmLi7flp75frrN4B0BH3yIgMRoziRwmw3vJDZSoe8aLDiF8TN_tmODXNDzU" sx={{ width: 40, height: 40, border: '2px solid #e5e7eb' }} />
                     </Box>
                 </Toolbar>
             </Container>

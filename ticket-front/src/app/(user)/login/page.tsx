@@ -28,7 +28,7 @@ export default function LoginPage() {
                 </Typography>
                 <Typography component="p" sx={{ mt: 1, color: secondaryColor }}>
                     티켓링크 회원이 아니신가요?
-                    <Link href="#" sx={{ color: primaryColor, fontWeight: 'medium', ml: 1 }}>
+                    <Link href="/signup" sx={{ color: primaryColor, fontWeight: 'medium', ml: 1 }}>
                         회원가입
                     </Link>
                 </Typography>
