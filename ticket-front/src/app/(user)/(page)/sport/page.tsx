@@ -1,8 +1,24 @@
 'use client';
 
 import * as React from 'react';
-import { Container, Box, Alert, AlertTitle, Tabs, Tab, Typography, Paper, Button, Avatar, Stack } from '@mui/material';
-import CampaignIcon from '@mui/icons-material/Campaign';
+import {Container, Box, Tabs, Tab, Typography, Paper, Button, Avatar, Stack} from '@mui/material';
+import {DraggableCarousel} from "@/components/sports/Carousel";
+import {useState} from "react";
+import WaitingRoomPage from "@/app/(user)/waiting/page";
+
+enum QueueStatus {
+    DIRECT_ENTER = 'DIRECT_ENTER', // 즉시 입장
+    JOINED = 'JOINED', // 대기열 진입
+}
+
+// 백엔드 API 응답 타입 정의
+interface QueueResult {
+    status: QueueStatus;
+    position?: number;
+    userId?: number;
+    eventId?: number;
+    concertId?: string; // 예시로 추가 (실제 응답에 맞춰 수정)
+}
 
 // 동적 생성을 위한 경기 데이터 (나중에 API로 대체)
 const games = [
@@ -54,20 +70,73 @@ const games = [
 
 export default function BaseballPage() {
     const [tabValue, setTabValue] = React.useState(0);
+    const [isWaitingModalOpen, setWaitingModalOpen] = useState(false);
+    const [initialPosition, setInitialPosition] = useState(0);
 
     const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
         setTabValue(newValue);
     };
 
+    // 3. 예매하기 버튼 클릭 이벤트 핸들러 작성
+    const handleReservationClick = async (eventId: number) => {
+        // 실제로는 로그인 정보 등에서 userId를 가져와야 합니다.
+        const userId = 123; // 테스트용 사용자 ID
+
+        try {
+            const response = await fetch('http://localhost:8080/api/v1/waiting/queue', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({eventId, userId}),
+            });
+
+            if (!response.ok) {
+                throw new Error('API 요청에 실패했습니다.');
+            }
+
+            const result: QueueResult = await response.json();
+
+            // 4. API 응답 결과에 따른 분기 처리
+            if (result.status === QueueStatus.DIRECT_ENTER) {
+                // 즉시 입장: 예매 페이지로 이동
+                console.log("즉시 입장 가능. 예매 페이지로 이동합니다.");
+                const url = `/reservation`; // 팝업으로 띄울 페이지의 URL
+                const windowName = "TicketingPopup";
+                const windowFeatures = "width=900,height=700,scrollbars=yes,resizable=yes";
+
+                // window.open(URL, 창 이름, 창 속성)
+                window.open(url, windowName, windowFeatures);
+                // concertId 같은 추가 정보를 백엔드에서 받아 이동할 수 있습니다.
+            } else if (result.status === QueueStatus.JOINED) {
+                // 대기열 진입: 대기열 페이지로 이동 + 초기 순위 정보 전달
+                setInitialPosition(result.position);
+                // 2. 모달을 열도록 상태 변경
+                setWaitingModalOpen(true);
+            }
+
+        } catch (error) {
+            console.error('예매 처리 중 오류:', error);
+            // 사용자에게 오류 알림 (예: alert, snackbar 등)
+            alert('오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+        }
+    };
+
+
     return (
-        <Container maxWidth="md" sx={{ py: 4 }}>
+        <Container maxWidth="md" sx={{py: 4}}>
+
+            <DraggableCarousel/>
+
             {/* 주의사항 알림 */}
 
             {/* 탭 메뉴 */}
-            <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 4 }}>
+            <Box sx={{borderBottom: 1, borderColor: 'divider', mb: 4}}>
                 <Tabs value={tabValue} onChange={handleTabChange} textColor="inherit" indicatorColor="primary">
-                    <Tab label="예매하기" sx={{ fontWeight: 'bold' }} />
-                    <Tab label="공지사항" />
+                    <Tab label="야구" sx={{fontWeight: 'bold'}}/>
+                    <Tab label="농구"/>
+                    <Tab label="축구"/>
+                    <Tab label="이스포츠"/>
                 </Tabs>
             </Box>
 
@@ -87,31 +156,39 @@ export default function BaseballPage() {
                         }}
                     >
                         {/* 날짜, 팀 정보 */}
-                        <Stack direction="row" alignItems="center" spacing={3} sx={{ flex: 1 }}>
-                            <Typography variant="subtitle1" sx={{ fontWeight: 'bold', width: '60px', textAlign: 'center' }}>
+                        <Stack direction="row" alignItems="center" spacing={3} sx={{flex: 1}}>
+                            <Typography variant="subtitle1"
+                                        sx={{fontWeight: 'bold', width: '60px', textAlign: 'center'}}>
                                 {game.date}
                             </Typography>
-                            <Avatar src={game.homeLogo} />
-                            <Typography variant="h6" sx={{ fontWeight: 'bold' }}>{game.homeTeam}</Typography>
+                            <Avatar src={game.homeLogo}/>
+                            <Typography variant="h6" sx={{fontWeight: 'bold'}}>{game.homeTeam}</Typography>
                             <Typography>vs</Typography>
-                            <Typography variant="h6" sx={{ fontWeight: 'bold' }}>{game.awayTeam}</Typography>
-                            <Avatar src={game.awayLogo} />
+                            <Typography variant="h6" sx={{fontWeight: 'bold'}}>{game.awayTeam}</Typography>
+                            <Avatar src={game.awayLogo}/>
                         </Stack>
 
                         {/* 시간, 장소 */}
-                        <Stack direction="row" alignItems="center" spacing={2} sx={{ flex: 1, justifyContent: 'center' }}>
-                            <Typography sx={{ fontWeight: 'medium' }}>{game.time}</Typography>
+                        <Stack direction="row" alignItems="center" spacing={2} sx={{flex: 1, justifyContent: 'center'}}>
+                            <Typography sx={{fontWeight: 'medium'}}>{game.time}</Typography>
                             <Typography color="text.secondary">{game.location}</Typography>
                         </Stack>
 
                         {/* 예매 버튼 */}
-                        <Box sx={{ flex: 1, display: 'flex', justifyContent: 'flex-end' }}>
+                        <Box sx={{flex: 1, display: 'flex', justifyContent: 'flex-end', width: 120}}>
+                            {/* 5. 버튼 상태 및 onClick 핸들러 수정 */}
                             {game.status === 'available' ? (
-                                <Button variant="contained" color="error" size="large">
+                                <Button
+                                    variant="contained"
+                                    color="error"
+                                    size="large"
+                                    onClick={() => handleReservationClick(game.id)}
+                                    sx={{minWidth: 120}}
+                                >
                                     예매하기
                                 </Button>
                             ) : (
-                                <Button variant="contained" disabled size="large">
+                                <Button variant="contained" disabled size="large" sx={{minWidth: 120}}>
                                     예매마감
                                 </Button>
                             )}
@@ -119,6 +196,13 @@ export default function BaseballPage() {
                     </Paper>
                 ))}
             </Stack>
+            <WaitingRoomPage
+                open={isWaitingModalOpen}
+                onClose={() => setWaitingModalOpen(false)}
+                position={initialPosition}
+                userId={123} // SSE 연결에 필요한 정보 전달
+                eventId={456} // SSE 연결에 필요한 정보 전달 (실제 eventId로 변경 필요)
+            />
         </Container>
     );
 }
