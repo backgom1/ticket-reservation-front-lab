@@ -17,7 +17,7 @@ interface QueueResult {
     position?: number;
     userId?: number;
     eventId?: number;
-    concertId?: string; // 예시로 추가 (실제 응답에 맞춰 수정)
+    concertId?: string;
 }
 
 // 동적 생성을 위한 경기 데이터 (나중에 API로 대체)
@@ -72,6 +72,9 @@ export default function BaseballPage() {
     const [tabValue, setTabValue] = React.useState(0);
     const [isWaitingModalOpen, setWaitingModalOpen] = useState(false);
     const [initialPosition, setInitialPosition] = useState(0);
+    const [eventId, setEventId] = useState(0);
+    const [userId, setUserId] = useState(0);
+
 
     const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
         setTabValue(newValue);
@@ -105,13 +108,11 @@ export default function BaseballPage() {
                 const windowName = "TicketingPopup";
                 const windowFeatures = "width=900,height=700,scrollbars=yes,resizable=yes";
 
-                // window.open(URL, 창 이름, 창 속성)
                 window.open(url, windowName, windowFeatures);
-                // concertId 같은 추가 정보를 백엔드에서 받아 이동할 수 있습니다.
             } else if (result.status === QueueStatus.JOINED) {
-                // 대기열 진입: 대기열 페이지로 이동 + 초기 순위 정보 전달
-                setInitialPosition(result.position);
-                // 2. 모달을 열도록 상태 변경
+                setInitialPosition(Number.parseInt(result.position));
+                setUserId(userId);
+                setEventId(eventId);
                 setWaitingModalOpen(true);
             }
 
@@ -200,8 +201,8 @@ export default function BaseballPage() {
                 open={isWaitingModalOpen}
                 onClose={() => setWaitingModalOpen(false)}
                 position={initialPosition}
-                userId={123} // SSE 연결에 필요한 정보 전달
-                eventId={456} // SSE 연결에 필요한 정보 전달 (실제 eventId로 변경 필요)
+                userId={userId}
+                eventId={eventId}
             />
         </Container>
     );

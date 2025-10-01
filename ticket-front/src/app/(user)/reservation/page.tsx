@@ -97,11 +97,11 @@ const SeatSelectionPage: React.FC = () => {
                 <Grid item xs={12} lg={12}>
                     <Stack spacing={3}>
                         <Typography variant="h4" component="h2" fontWeight="bold">
-                            2024 프로 야구 리그
+                            2025 프로 야구 리그
                         </Typography>
                         <Card sx={{
-                            width: '100%', // 부모 영역보다 1.2배 크게
-                            minWidth: '600px', // 최소 너비를 600px로 고정
+                            width: '100%',
+                            minWidth: '600px',
                             height: '100%',
                             minHeight: '566px',
                         }}>

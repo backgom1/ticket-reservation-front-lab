@@ -63,7 +63,6 @@ const PrevArrow = (props: { className?: string; style?: React.CSSProperties; onC
 
 
 export const DraggableCarousel: React.FC = () => {
-    // ✅ 2. react-slick의 설정 객체 생성
     const settings = {
         dots: true, // 하단 인디케이터 표시
         infinite: true, // 무한 루프
